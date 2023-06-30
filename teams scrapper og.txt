@@ -1,0 +1,23 @@
+#a different approach to pulling tables
+
+def get_player_url():
+    url = 'https://www.statscrew.com/football/roster/t-PIT/y-2020'
+    response = requests.get(url)
+    html = response.text
+    soup = BeautifulSoup(html, 'html.parser')
+    player_table = soup.select('table.sortable')[0]
+    links = player_table.find_all('a')
+    links = [l.get('href') for l in links]
+    return links
+
+
+#players = pd.read_html(html, match="selectrongo:done")
+#links = [l for l in links if 'desired element' in l] if multiple undesired links return
+#player_url = [f'https://www.statscrew.com{l}' for l in links] if link does not include domain
+
+player_url = get_player_url()[0]
+html = requests.get(player_url)
+page_clean = html.text
+player_page = BeautifulSoup(page_clean, 'html.parser')
+player_html = player_page.select('div')[15]
+player = player_html.select('p')[0].text
